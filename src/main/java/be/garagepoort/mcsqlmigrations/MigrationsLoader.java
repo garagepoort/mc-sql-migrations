@@ -1,6 +1,8 @@
 package be.garagepoort.mcsqlmigrations;
 
 import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.scanners.TypeAnnotationsScanner;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -14,7 +16,7 @@ public class MigrationsLoader {
         try {
             List<Migration> result = new ArrayList<>();
             for (String aPackage : packages) {
-                Reflections reflections = new Reflections(aPackage);
+                Reflections reflections = new Reflections(aPackage, new TypeAnnotationsScanner(), new SubTypesScanner());
                 Set<Class<? extends Migration>> subTypesOf = reflections.getSubTypesOf(Migration.class);
                 for (Class<? extends Migration> aClass : subTypesOf) {
                     Constructor<?>[] constructors = aClass.getConstructors();
