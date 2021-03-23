@@ -87,6 +87,12 @@
                                     </excludes>
                                 </filter>
                             </filters>
+                            <relocations>
+                                <relocation>
+                                    <pattern>org.reflections.</pattern>
+                                    <shadedPattern>be.garagepoort.mcsqlmigrations.org.reflections.</shadedPattern>
+                                </relocation>
+                            </relocations>
                         </configuration>
                     </execution>
                 </executions>
