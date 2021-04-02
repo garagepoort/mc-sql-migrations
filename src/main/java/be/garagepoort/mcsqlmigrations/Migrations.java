@@ -40,7 +40,7 @@ public class Migrations {
                     + ");";
             stmt.execute(sql);
         } catch (SQLException e) {
-            LOGGER.error("Failure creating migration table: {}", e.getMessage());
+            throw new SqlMigrationException("Failure creating migration table: {}", e);
         }
     }
 
@@ -55,7 +55,7 @@ public class Migrations {
                     + ");";
             stmt.execute(sql);
         } catch (SQLException e) {
-            LOGGER.error("Failure creating migration table: {}", e.getMessage());
+            throw new SqlMigrationException("Failure creating migration table: {}", e);
         }
 
     }
@@ -83,7 +83,7 @@ public class Migrations {
                 }
             }
         } catch (SQLException e) {
-            LOGGER.error("Failure executing migrations: {}", e.getMessage());
+            throw new SqlMigrationException("Failure executing migrations: {}", e);
         }
     }
 
@@ -95,8 +95,7 @@ public class Migrations {
             LOGGER.info("Latest migration version = {}", max);
             return max;
         } catch (SQLException e) {
-            LOGGER.error("Failure retrieving max migration version: {}", e.getMessage());
+            throw new SqlMigrationException("Failure retrieving max migration version: {}", e);
         }
-        return 0;
     }
 }
