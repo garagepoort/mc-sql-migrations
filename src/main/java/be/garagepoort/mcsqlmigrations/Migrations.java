@@ -71,19 +71,31 @@ public class Migrations {
                     .collect(Collectors.toList());
 
             for (Migration migration : validMigrations) {
-                try (Statement stmt = connect.createStatement()) {
-                    String sql = migration.getStatement();
-                    stmt.execute(sql);
+                if (migration.getStatement() != null) {
+                    executeStatement(connect, migration.getStatement());
+                }
+                if (migration.getStatements() != null) {
+                    for (String s : migration.getStatements()) {
+                        executeStatement(connect, s);
+                    }
+                }
 
-                    PreparedStatement migrationStatement = connect.prepareStatement("INSERT INTO " + migrationsTableName + " (version) VALUES (?);");
+                try (PreparedStatement migrationStatement = connect.prepareStatement("INSERT INTO " + migrationsTableName + " (version) VALUES (?);")) {
                     migrationStatement.setInt(1, migration.getVersion());
                     migrationStatement.execute();
-
-                    connect.commit();
                 }
+
+                connect.commit();
             }
+            connect.setAutoCommit(true);
         } catch (SQLException e) {
             throw new SqlMigrationException("Failure executing migrations: {}", e);
+        }
+    }
+
+    private void executeStatement(Connection connect, String statement) throws SQLException {
+        try (Statement stmt = connect.createStatement()) {
+            stmt.execute(statement);
         }
     }
 
