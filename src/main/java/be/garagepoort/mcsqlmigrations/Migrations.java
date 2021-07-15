@@ -71,25 +71,33 @@ public class Migrations {
                     .collect(Collectors.toList());
 
             for (Migration migration : validMigrations) {
-                if (migration.getStatement() != null) {
-                    executeStatement(connect, migration.getStatement());
-                }
-                if (migration.getStatements() != null) {
-                    for (String s : migration.getStatements()) {
-                        executeStatement(connect, s);
+                try {
+
+                    if (migration.getStatement() != null) {
+                        executeStatement(connect, migration.getStatement());
                     }
-                }
+                    if (migration.getStatements() != null) {
+                        for (String s : migration.getStatements()) {
+                            executeStatement(connect, s);
+                        }
+                    }
 
-                try (PreparedStatement migrationStatement = connect.prepareStatement("INSERT INTO " + migrationsTableName + " (version) VALUES (?);")) {
-                    migrationStatement.setInt(1, migration.getVersion());
-                    migrationStatement.execute();
-                }
+                    try (PreparedStatement migrationStatement = connect.prepareStatement("INSERT INTO " + migrationsTableName + " (version) VALUES (?);")) {
+                        migrationStatement.setInt(1, migration.getVersion());
+                        migrationStatement.execute();
+                    }
 
-                connect.commit();
+                    connect.commit();
+                } catch (SQLException e) {
+                    connect.rollback();
+                    connect.setAutoCommit(true);
+                    throw new SqlMigrationException("Failure executing migrations: {}", e);
+                }
             }
+            connect.commit();
             connect.setAutoCommit(true);
         } catch (SQLException e) {
-            throw new SqlMigrationException("Failure executing migrations: {}", e);
+            throw new SqlMigrationException("Failure connecting to the database: {}", e);
         }
     }
 
