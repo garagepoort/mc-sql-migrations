@@ -52,6 +52,11 @@ public class SqliteQueryService implements SqlQueryService {
     }
 
     @Override
+    public synchronized <T> T getOne(String query, RowMapper<T> rowMapper) {
+        return SqlQueryService.super.getOne(query, rowMapper);
+    }
+
+    @Override
     public synchronized <T> List<T> find(String query, RowMapper<T> rowMapper) {
         return SqlQueryService.super.find(query, rowMapper);
     }

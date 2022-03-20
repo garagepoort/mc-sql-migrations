@@ -29,6 +29,10 @@ public interface SqlQueryService {
         return Optional.empty();
     }
 
+    default <T> T getOne(String query, RowMapper<T> rowMapper) {
+        return getOne(query, (rs) -> {}, rowMapper);
+    }
+
     default <T> T getOne(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
         try (Connection sql = getConnection();
              PreparedStatement ps = sql.prepareStatement(query)) {
