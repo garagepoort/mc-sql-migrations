@@ -7,17 +7,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class MysqlQueryService implements SqlQueryService {
+public class MysqlQueryBuilder extends QueryBuilder {
 
-    private final SqlConnectionProvider sqlConnectionProvider;
-
-    public MysqlQueryService(SqlConnectionProvider sqlConnectionProvider) {
-        this.sqlConnectionProvider = sqlConnectionProvider;
-    }
-
-    @Override
-    public Connection getConnection() {
-        return sqlConnectionProvider.getConnection();
+    public MysqlQueryBuilder(SqlConnectionProvider connectionProvider) {
+        super(connectionProvider);
     }
 
     @Override

@@ -1,14 +1,22 @@
 package be.garagepoort.mcsqlmigrations.helpers;
 
+import be.garagepoort.mcsqlmigrations.DatabaseType;
+import be.garagepoort.mcsqlmigrations.SqlConnectionProvider;
+
 public class QueryBuilderFactory {
 
-    private final SqlQueryService sqlQueryService;
+    private final DatabaseType databaseType;
+    private final SqlConnectionProvider sqlConnectionProvider;
 
-    public QueryBuilderFactory(SqlQueryService sqlQueryService) {
-        this.sqlQueryService = sqlQueryService;
+    public QueryBuilderFactory(DatabaseType databaseType, SqlConnectionProvider sqlConnectionProvider) {
+        this.databaseType = databaseType;
+        this.sqlConnectionProvider = sqlConnectionProvider;
     }
 
     public QueryBuilder create() {
-        return new QueryBuilder(sqlQueryService);
+        if (databaseType == DatabaseType.MYSQL) {
+            return new MysqlQueryBuilder(sqlConnectionProvider);
+        }
+        return new SqliteQueryBuilder(sqlConnectionProvider);
     }
 }
