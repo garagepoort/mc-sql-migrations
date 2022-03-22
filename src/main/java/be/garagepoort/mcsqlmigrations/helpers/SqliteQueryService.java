@@ -27,43 +27,43 @@ public class SqliteQueryService implements SqlQueryService {
     }
 
     @Override
-    public synchronized int insertQuery(String query, SqlParameterSetter parameterSetter) {
-        return SqlQueryService.super.insertQuery(query, parameterSetter);
+    public synchronized int insertQuery(Connection connection, String query, SqlParameterSetter parameterSetter) {
+        return SqlQueryService.super.insertQuery(connection, query, parameterSetter);
     }
 
     @Override
-    public synchronized void updateQuery(String query, SqlParameterSetter parameterSetter) {
-        SqlQueryService.super.updateQuery(query, parameterSetter);
+    public synchronized void updateQuery(Connection connection, String query, SqlParameterSetter parameterSetter) {
+        SqlQueryService.super.updateQuery(connection, query, parameterSetter);
     }
 
     @Override
-    public synchronized void deleteQuery(String query, SqlParameterSetter parameterSetter) {
-        SqlQueryService.super.deleteQuery(query, parameterSetter);
+    public synchronized void deleteQuery(Connection connection, String query, SqlParameterSetter parameterSetter) {
+        SqlQueryService.super.deleteQuery(connection, query, parameterSetter);
     }
 
     @Override
-    public synchronized <T> Optional<T> findOne(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
-        return SqlQueryService.super.findOne(query, parameterSetter, rowMapper);
+    public synchronized <T> Optional<T> findOne(Connection connection, String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
+        return SqlQueryService.super.findOne(connection, query, parameterSetter, rowMapper);
     }
 
     @Override
-    public synchronized <T> T getOne(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
-        return SqlQueryService.super.getOne(query, parameterSetter, rowMapper);
+    public synchronized <T> T getOne(Connection connection, String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
+        return SqlQueryService.super.getOne(connection, query, parameterSetter, rowMapper);
     }
 
     @Override
-    public synchronized <T> T getOne(String query, RowMapper<T> rowMapper) {
-        return SqlQueryService.super.getOne(query, rowMapper);
+    public synchronized <T> T getOne(Connection connection, String query, RowMapper<T> rowMapper) {
+        return SqlQueryService.super.getOne(connection, query, rowMapper);
     }
 
     @Override
-    public synchronized <T> List<T> find(String query, RowMapper<T> rowMapper) {
-        return SqlQueryService.super.find(query, rowMapper);
+    public synchronized <T> List<T> find(Connection connection, String query, RowMapper<T> rowMapper) {
+        return SqlQueryService.super.find(connection, query, rowMapper);
     }
 
     @Override
-    public synchronized <T> List<T> find(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
-        return SqlQueryService.super.find(query, parameterSetter, rowMapper);
+    public synchronized <T> List<T> find(Connection connection, String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
+        return SqlQueryService.super.find(connection, query, parameterSetter, rowMapper);
     }
 
     @Override

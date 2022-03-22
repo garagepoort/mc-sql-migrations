@@ -5,6 +5,10 @@ public class DatabaseException extends RuntimeException {
         super(cause);
     }
 
+    public DatabaseException(String cause) {
+        super(cause);
+    }
+
     public DatabaseException(String error, Throwable e) {
         super(error, e);
     }
