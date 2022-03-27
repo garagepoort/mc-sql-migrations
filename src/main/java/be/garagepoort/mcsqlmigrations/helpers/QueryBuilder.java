@@ -16,6 +16,7 @@ import java.util.Optional;
 public abstract class QueryBuilder {
 
     protected final Connection connection;
+    private boolean transactional = false;
 
     public QueryBuilder(SqlConnectionProvider connectionProvider) {
         this.connection = connectionProvider.getConnection();
@@ -24,6 +25,7 @@ public abstract class QueryBuilder {
     public QueryBuilder startTransaction() {
         try {
             connection.setAutoCommit(false);
+            transactional = true;
             return this;
         } catch (SQLException e) {
             throw new DatabaseException(e);
@@ -41,7 +43,7 @@ public abstract class QueryBuilder {
 
     private void closeConnection() {
         try {
-            if (connection.getAutoCommit()) {
+            if (!transactional) {
                 connection.close();
             }
         } catch (SQLException e) {
@@ -56,13 +58,14 @@ public abstract class QueryBuilder {
             try (ResultSet rs = ps.executeQuery()) {
                 boolean first = rs.next();
                 if (first) {
-                    return Optional.of(rowMapper.apply(rs));
+                    one = Optional.of(rowMapper.apply(rs));
                 }
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        closeConnection();
         return one;
     }
 
@@ -81,10 +84,10 @@ public abstract class QueryBuilder {
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        T one = result;
-        this.closeConnection();
-        return one;
+        return result;
     }
 
     public <T> List<T> find(String query, RowMapper<T> rowMapper) {
@@ -104,8 +107,9 @@ public abstract class QueryBuilder {
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        this.closeConnection();
         return results;
     }
 
@@ -126,8 +130,9 @@ public abstract class QueryBuilder {
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        this.closeConnection();
         return results;
     }
 
@@ -139,10 +144,10 @@ public abstract class QueryBuilder {
             result = getGeneratedId(connection, insert);
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        int i = result;
-        this.closeConnection();
-        return i;
+        return result;
     }
 
     public void updateQuery(String query, SqlParameterSetter parameterSetter) {
@@ -151,8 +156,9 @@ public abstract class QueryBuilder {
             insert.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        this.closeConnection();
     }
 
     public void deleteQuery(String query, SqlParameterSetter parameterSetter) {
@@ -161,8 +167,9 @@ public abstract class QueryBuilder {
             insert.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            this.closeConnection();
         }
-        this.closeConnection();
     }
 
     protected abstract Integer getGeneratedId(Connection connection, PreparedStatement insert) throws SQLException;
