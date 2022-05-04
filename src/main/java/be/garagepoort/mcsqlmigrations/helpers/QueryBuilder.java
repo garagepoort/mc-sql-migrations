@@ -35,6 +35,7 @@ public abstract class QueryBuilder {
     public void commit() {
         try {
             connection.commit();
+            transactional = false;
             closeConnection();
         } catch (SQLException e) {
             throw new DatabaseException(e);
