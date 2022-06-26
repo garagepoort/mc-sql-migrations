@@ -76,6 +76,7 @@
                                     <exclude>org.hamcrest:hamcrest-core:jar</exclude>
                                     <exclude>junit:junit</exclude>
                                     <exclude>io.netty:netty-all</exclude>
+                                    <exclude>org.slf4j</exclude>
                                 </excludes>
                             </artifactSet>
                             <filters>
@@ -92,6 +93,10 @@
                                 <relocation>
                                     <pattern>org.reflections.</pattern>
                                     <shadedPattern>be.garagepoort.mcsqlmigrations.org.reflections.</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javassist.</pattern>
+                                    <shadedPattern>be.garagepoort.mcsqlmigrations.javassist.</shadedPattern>
                                 </relocation>
                             </relocations>
                         </configuration>
