@@ -12,11 +12,11 @@ public class Migrations {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Migrations.class);
 
-    private final List<Migration> migrationsScripts;
+    private final List<? extends Migration> migrationsScripts;
     private final SqlConnectionProvider sqlConnectionProvider;
 
-    public Migrations(SqlConnectionProvider sqlConnectionProvider) {
-        this.migrationsScripts = MigrationsLoader.load(sqlConnectionProvider.getMigrationPackages());
+    public Migrations(SqlConnectionProvider sqlConnectionProvider, MigrationsProvider migrationsProvider) {
+        this.migrationsScripts = migrationsProvider.getMigrations();
         this.sqlConnectionProvider = sqlConnectionProvider;
     }
 
