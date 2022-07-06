@@ -29,6 +29,8 @@ public abstract class QueryBuilder {
             return this;
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -39,6 +41,8 @@ public abstract class QueryBuilder {
             closeConnection();
         } catch (SQLException e) {
             throw new DatabaseException(e);
+        } finally {
+            closeConnection();
         }
     }
 
@@ -53,21 +57,20 @@ public abstract class QueryBuilder {
     }
 
     public <T> Optional<T> findOne(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
-        Optional<T> one = Optional.empty();
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             parameterSetter.accept(ps);
             try (ResultSet rs = ps.executeQuery()) {
                 boolean first = rs.next();
                 if (first) {
-                    one = Optional.of(rowMapper.apply(rs));
+                    return Optional.of(rowMapper.apply(rs));
                 }
             }
+            return Optional.empty();
         } catch (SQLException e) {
             throw new DatabaseException(e);
         } finally {
             this.closeConnection();
         }
-        return one;
     }
 
     public <T> T getOne(String query, RowMapper<T> rowMapper) {
@@ -76,19 +79,17 @@ public abstract class QueryBuilder {
     }
 
     public <T> T getOne(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
-        T result;
         try (PreparedStatement ps = connection.prepareStatement(query)) {
             parameterSetter.accept(ps);
             try (ResultSet rs = ps.executeQuery()) {
                 rs.next();
-                result = rowMapper.apply(rs);
+                return rowMapper.apply(rs);
             }
         } catch (SQLException e) {
             throw new DatabaseException(e);
         } finally {
             this.closeConnection();
         }
-        return result;
     }
 
     public <T> List<T> find(String query, RowMapper<T> rowMapper) {
@@ -97,21 +98,21 @@ public abstract class QueryBuilder {
     }
 
     public <T> List<T> find(String query, SqlParameterSetter parameterSetter, RowMapper<T> rowMapper) {
-        List<T> results = new ArrayList<>();
         try (PreparedStatement ps = connection.prepareStatement(query)
         ) {
+        List<T> results = new ArrayList<>();
             parameterSetter.accept(ps);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     results.add(rowMapper.apply(rs));
                 }
             }
+        return results;
         } catch (SQLException e) {
             throw new DatabaseException(e);
         } finally {
             this.closeConnection();
         }
-        return results;
     }
 
     public <K, V> Map<K, V> findMap(String query, KeyMapper<K> keyMapper, ValueMapper<V> valueMapper) {
@@ -138,17 +139,15 @@ public abstract class QueryBuilder {
     }
 
     public int insertQuery(String query, SqlParameterSetter parameterSetter) {
-        int result;
         try (PreparedStatement insert = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
             parameterSetter.accept(insert);
             insert.executeUpdate();
-            result = getGeneratedId(connection, insert);
+            return getGeneratedId(connection, insert);
         } catch (SQLException e) {
             throw new DatabaseException(e);
         } finally {
             this.closeConnection();
         }
-        return result;
     }
 
     public void updateQuery(String query, SqlParameterSetter parameterSetter) {
