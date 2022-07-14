@@ -35,9 +35,9 @@ public class Migrations {
             LOGGER.info("Creating migration table");
 
             String sql = "CREATE TABLE IF NOT EXISTS " + migrationsTableName + " (\n"
-                    + "	id integer PRIMARY KEY,\n"
-                    + "	version integer NOT NULL\n"
-                    + ");";
+                + "	id integer PRIMARY KEY,\n"
+                + "	version integer NOT NULL\n"
+                + ");";
             stmt.execute(sql);
         } catch (SQLException e) {
             throw new SqlMigrationException("Failure creating migration table: {}", e);
@@ -50,25 +50,24 @@ public class Migrations {
             LOGGER.info("Creating migration table");
 
             String sql = "CREATE TABLE IF NOT EXISTS " + migrationsTableName + " (\n"
-                    + "	id BIGINT PRIMARY KEY AUTO_INCREMENT,\n"
-                    + "	version integer NOT NULL\n"
-                    + ");";
+                + "	id BIGINT PRIMARY KEY AUTO_INCREMENT,\n"
+                + "	version integer NOT NULL\n"
+                + ");";
             stmt.execute(sql);
         } catch (SQLException e) {
             throw new SqlMigrationException("Failure creating migration table: {}", e);
         }
-
     }
 
     private void runMigrations(String migrationsTableName) {
         try (Connection connect = sqlConnectionProvider.getConnection()) {
             LOGGER.info("Starting migrations");
             connect.setAutoCommit(false);
-            int maxVersion = getMaxVersion(migrationsTableName);
+            int maxVersion = getMaxVersion(migrationsTableName, connect);
 
             List<Migration> validMigrations = migrationsScripts.stream().filter(m -> m.getVersion() > maxVersion)
-                    .sorted(Comparator.comparingInt(Migration::getVersion))
-                    .collect(Collectors.toList());
+                .sorted(Comparator.comparingInt(Migration::getVersion))
+                .collect(Collectors.toList());
 
             for (Migration migration : validMigrations) {
                 try {
@@ -107,9 +106,8 @@ public class Migrations {
         }
     }
 
-    private int getMaxVersion(String migrationsTableName) {
-        try (Connection connect = sqlConnectionProvider.getConnection();
-             Statement stmt = connect.createStatement()) {
+    private int getMaxVersion(String migrationsTableName, Connection connect) {
+        try (Statement stmt = connect.createStatement()) {
             ResultSet resultSet = stmt.executeQuery("SELECT max(version) as max from " + migrationsTableName);
             int max = resultSet.next() ? resultSet.getInt("max") : 0;
             LOGGER.info("Latest migration version = {}", max);
