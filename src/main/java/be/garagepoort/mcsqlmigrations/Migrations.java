@@ -72,11 +72,11 @@ public class Migrations {
             for (Migration migration : validMigrations) {
                 try {
 
-                    if (migration.getStatement() != null) {
-                        executeStatement(connect, migration.getStatement());
+                    if (migration.getStatement(connect) != null) {
+                        executeStatement(connect, migration.getStatement(connect));
                     }
-                    if (migration.getStatements() != null) {
-                        for (String s : migration.getStatements()) {
+                    if (migration.getStatements(connect) != null) {
+                        for (String s : migration.getStatements(connect)) {
                             executeStatement(connect, s);
                         }
                     }

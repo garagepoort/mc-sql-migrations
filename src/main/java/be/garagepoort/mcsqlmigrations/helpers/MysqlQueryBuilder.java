@@ -13,6 +13,10 @@ public class MysqlQueryBuilder extends QueryBuilder {
         super(connectionProvider);
     }
 
+    public MysqlQueryBuilder(Connection connection) {
+        super(connection);
+    }
+
     @Override
     public Integer getGeneratedId(Connection connection, PreparedStatement insert) throws SQLException {
         ResultSet generatedKeys;

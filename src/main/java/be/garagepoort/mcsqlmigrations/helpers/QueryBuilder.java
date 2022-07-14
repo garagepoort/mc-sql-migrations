@@ -22,6 +22,11 @@ public abstract class QueryBuilder {
         this.connection = connectionProvider.getConnection();
     }
 
+    public QueryBuilder(Connection connection) {
+        this.connection = connection;
+        this.transactional = true;
+    }
+
     public QueryBuilder startTransaction() {
         try {
             connection.setAutoCommit(false);

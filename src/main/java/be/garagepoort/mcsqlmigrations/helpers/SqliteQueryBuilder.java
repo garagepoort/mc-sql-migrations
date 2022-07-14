@@ -18,6 +18,10 @@ public class SqliteQueryBuilder extends QueryBuilder {
         super(connectionProvider);
     }
 
+    public SqliteQueryBuilder(Connection connection) {
+        super(connection);
+    }
+
     public QueryBuilder startTransaction() {
         synchronized (LOCK) {
             return super.startTransaction();
